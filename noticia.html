@@ -41,6 +41,21 @@
 
     <script src="js/main.js"></script>
     <script>
+        function formatarTexto(texto) {
+            if (!texto) return '<p>Notícia em atualização...</p>';
+            const paragrafos = texto.split(/\n\n+/);
+            return paragrafos.map(p => {
+                p = p.trim();
+                if (!p) return '';
+                if (p.startsWith('### ')) {
+                    return '<h3>' + p.replace('### ', '') + '</h3>';
+                }
+                p = p.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                p = p.replace(/\n/g, '<br>');
+                return '<p>' + p + '</p>';
+            }).join('');
+        }
+
         async function carregarNoticia() {
             const params = new URLSearchParams(window.location.search);
             const id = parseInt(params.get('id'));
@@ -74,7 +89,7 @@
                 </div>
                 <img src="${noticia.imagem}" alt="${noticia.titulo}" class="news-detail-img">
                 <div class="news-detail-content">
-                    <p>${noticia.resumo || 'Notícia em atualização...'}</p>
+                    ${formatarTexto(noticia.resumo)}
                 </div>
                 <div style="margin-top: 30px;">
                     <div class="section-title">

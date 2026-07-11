@@ -763,6 +763,19 @@ nav a.active {
     margin-bottom: 16px;
 }
 
+.news-detail-content h3 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 24px 0 12px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+}
+
+.news-detail-content strong {
+    color: var(--text-primary);
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 1024px) {
     .hero-grid {
