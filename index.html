@@ -172,23 +172,24 @@
                     </div>
                 </a>`).join('');
 
-            // News grid
-            document.getElementById('news-grid').innerHTML = dados.ultimasNoticias.map(n => `
+            // News grid (exclui destaque que já aparece no hero)
+            const noticiasGrid = dados.ultimasNoticias.filter(n => n.id !== destaque?.id);
+            document.getElementById('news-grid').innerHTML = noticiasGrid.map(n => {
+                const resumoCurto = (n.resumo || '').substring(0, 140).replace(/\\n/g, ' ').replace(/\n/g, ' ') + '...';
+                return `
                 <a href="noticia.html?id=${n.id}" class="news-card">
                     <img src="${n.imagem}" alt="${n.titulo}">
                     <div class="news-card-body">
                         <span class="news-card-tag">${n.tag}</span>
                         <h3 class="news-card-title">${n.titulo}</h3>
-                        <p class="news-card-excerpt">${n.resumo || ''}</p>
+                        <p class="news-card-excerpt">${resumoCurto}</p>
                         <div class="news-card-meta">
                             <span>${n.data}</span>
-                            <div class="news-card-stats">
-                                <span>❤️ ${n.curtidas}</span>
-                                <span>💬 ${n.comentarios}</span>
-                            </div>
+                            <span class="news-card-link">Ler mais →</span>
                         </div>
                     </div>
-                </a>`).join('');
+                </a>`;
+            }).join('');
 
             // Videos
             document.getElementById('videos-grid').innerHTML = dados.videos.map(v => `
