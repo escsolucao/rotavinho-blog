@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Admin - Rotavinho</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #0d0d0d; color: #fff; min-height: 100vh; }
+
+        .admin-header { background: #1a1a1a; border-bottom: 3px solid #e31837; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
+        .admin-header h1 { font-size: 1.3rem; }
+        .admin-header h1 span { color: #e31837; }
+        .admin-header a { color: #4da6ff; font-size: 0.9rem; }
+
+        .admin-container { max-width: 1000px; margin: 0 auto; padding: 24px; }
+
+        .tabs { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+        .tab { padding: 10px 20px; background: #1e1e1e; border: none; color: #b0b0b0; border-radius: 8px; cursor: pointer; font-size: 0.9rem; font-weight: 600; transition: all 0.2s; }
+        .tab.active { background: #e31837; color: #fff; }
+        .tab:hover { background: #2a2a2a; }
+        .tab.active:hover { background: #ff2a4a; }
+
+        .panel { display: none; }
+        .panel.active { display: block; }
+
+        .form-card { background: #1e1e1e; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+        .form-card h3 { margin-bottom: 16px; font-size: 1.1rem; border-bottom: 2px solid #e31837; padding-bottom: 8px; }
+
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; margin-bottom: 6px; font-size: 0.85rem; color: #b0b0b0; font-weight: 600; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px 14px; background: #0d0d0d; border: 1px solid #333; border-radius: 6px; color: #fff; font-size: 0.9rem; font-family: inherit; }
+        .form-group textarea { min-height: 80px; resize: vertical; }
+        .form-group input:focus, .form-group textarea:focus { outline: none; border-color: #e31837; }
+
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+        .btn { padding: 10px 24px; border: none; border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 0.9rem; transition: all 0.2s; }
+        .btn-primary { background: #e31837; color: #fff; }
+        .btn-primary:hover { background: #ff2a4a; }
+        .btn-success { background: #28a745; color: #fff; }
+        .btn-success:hover { background: #34ce57; }
+        .btn-danger { background: #dc3545; color: #fff; }
+        .btn-danger:hover { background: #e8616e; }
+        .btn-secondary { background: #333; color: #fff; }
+        .btn-secondary:hover { background: #444; }
+
+        .btn-group { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+
+        .list-item { display: flex; align-items: center; gap: 14px; padding: 14px; background: #0d0d0d; border-radius: 8px; margin-bottom: 10px; }
+        .list-item img { width: 80px; height: 60px; object-fit: cover; border-radius: 6px; }
+        .list-item-info { flex: 1; }
+        .list-item-title { font-weight: 600; font-size: 0.9rem; margin-bottom: 4px; }
+        .list-item-meta { font-size: 0.75rem; color: #777; }
+        .list-item-actions { display: flex; gap: 6px; }
+        .list-item-actions .btn { padding: 6px 12px; font-size: 0.75rem; }
+
+        .empty-state { text-align: center; padding: 40px; color: #777; }
+
+        .download-bar { background: #1e1e1e; border-radius: 8px; padding: 16px; margin-top: 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; border: 2px solid #28a745; }
+        .download-bar p { font-size: 0.9rem; color: #b0b0b0; }
+
+        .toast { position: fixed; bottom: 24px; right: 24px; background: #28a745; color: #fff; padding: 12px 24px; border-radius: 8px; font-weight: 600; opacity: 0; transform: translateY(20px); transition: all 0.3s; z-index: 999; }
+        .toast.show { opacity: 1; transform: translateY(0); }
+
+        .checkbox-group { display: flex; align-items: center; gap: 8px; }
+        .checkbox-group input[type="checkbox"] { width: auto; }
+
+        @media (max-width: 600px) {
+            .form-row { grid-template-columns: 1fr; }
+            .list-item { flex-direction: column; text-align: center; }
+            .list-item img { width: 100%; height: 120px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="admin-header">
+        <h1>Painel <span>Rotavinho</span></h1>
+        <a href="index.html">Ver site ↗</a>
+    </header>
+
+    <div class="admin-container">
+        <div class="tabs">
+            <button class="tab active" data-tab="noticias">📰 Notícias</button>
+            <button class="tab" data-tab="timao">⚡ Últimas do Timão</button>
+            <button class="tab" data-tab="videos">🎬 Vídeos</button>
+            <button class="tab" data-tab="jogos">⚽ Próximos Jogos</button>
+        </div>
+
+        <!-- === NOTÍCIAS === -->
+        <div class="panel active" id="panel-noticias">
+            <div class="form-card">
+                <h3>Adicionar / Editar Notícia</h3>
+                <input type="hidden" id="noticia-id">
+                <div class="form-group">
+                    <label>Título da notícia *</label>
+                    <input type="text" id="noticia-titulo" placeholder="Ex: Corinthians busca reforços para o Brasileirão">
+                </div>
+                <div class="form-group">
+                    <label>Resumo</label>
+                    <textarea id="noticia-resumo" placeholder="Breve descrição da notícia..."></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>URL da imagem</label>
+                        <input type="text" id="noticia-imagem" placeholder="https://.imgur.com/foto.jpg">
+                    </div>
+                    <div class="form-group">
+                        <label>Categoria</label>
+                        <select id="noticia-tag">
+                            <option value="Mercado">Mercado</option>
+                            <option value="Destaque">Destaque</option>
+                            <option value="Brasileirão">Brasileirão</option>
+                            <option value="Copa do Brasil">Copa do Brasil</option>
+                            <option value="Libertadores">Libertadores</option>
+                            <option value="Base">Base</option>
+                            <option value="Torcida">Torcida</option>
+                            <option value="LNF">LNF (Futsal)</option>
+                            <option value="Feminino">Feminino</option>
+                            <option value="Arena">Arena</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Data/Hora</label>
+                        <input type="text" id="noticia-data" placeholder="Ex: Hoje, 14h30">
+                    </div>
+                    <div class="form-group">
+                        <label>É destaque? (aparece no hero)</label>
+                        <select id="noticia-destaque">
+                            <option value="false">Não</option>
+                            <option value="true">Sim</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="salvarNoticia()">Salvar Notícia</button>
+                    <button class="btn btn-secondary" onclick="limparFormNoticia()">Limpar</button>
+                </div>
+            </div>
+
+            <div class="form-card">
+                <h3>Notícias Cadastradas</h3>
+                <div id="lista-noticias"></div>
+            </div>
+        </div>
+
+        <!-- === ÚLTIMAS DO TIMÃO === -->
+        <div class="panel" id="panel-timao">
+            <div class="form-card">
+                <h3>Adicionar / Editar Última do Timão</h3>
+                <input type="hidden" id="timao-id">
+                <div class="form-group">
+                    <label>Título *</label>
+                    <input type="text" id="timao-titulo" placeholder="Título da notícia">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>URL da imagem</label>
+                        <input type="text" id="timao-imagem" placeholder="https://...">
+                    </div>
+                    <div class="form-group">
+                        <label>Data/Hora</label>
+                        <input type="text" id="timao-data" placeholder="Hoje, 15h30">
+                    </div>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="salvarTimao()">Salvar</button>
+                    <button class="btn btn-secondary" onclick="limparFormTimao()">Limpar</button>
+                </div>
+            </div>
+
+            <div class="form-card">
+                <h3>Últimas do Timão Cadastradas</h3>
+                <div id="lista-timao"></div>
+            </div>
+        </div>
+
+        <!-- === VÍDEOS === -->
+        <div class="panel" id="panel-videos">
+            <div class="form-card">
+                <h3>Adicionar / Editar Vídeo</h3>
+                <input type="hidden" id="video-id">
+                <div class="form-group">
+                    <label>Título do vídeo *</label>
+                    <input type="text" id="video-titulo" placeholder="Ex: Análise do jogo de ontem">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>ID do YouTube *</label>
+                        <input type="text" id="video-youtube" placeholder="Ex: dQw4w9WgXcQ (só o ID)">
+                    </div>
+                    <div class="form-group">
+                        <label>URL da Thumbnail</label>
+                        <input type="text" id="video-imagem" placeholder="https://... (deixe vazio para usar auto)">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Visualizações</label>
+                        <input type="text" id="video-views" placeholder="Ex: 12.5 mil">
+                    </div>
+                    <div class="form-group">
+                        <label>Tempo</label>
+                        <input type="text" id="video-tempo" placeholder="Ex: há 2 dias">
+                    </div>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="salvarVideo()">Salvar</button>
+                    <button class="btn btn-secondary" onclick="limparFormVideo()">Limpar</button>
+                </div>
+            </div>
+
+            <div class="form-card">
+                <h3>Vídeos Cadastrados</h3>
+                <div id="lista-videos"></div>
+            </div>
+        </div>
+
+        <!-- === PRÓXIMOS JOGOS === -->
+        <div class="panel" id="panel-jogos">
+            <div class="form-card">
+                <h3>Adicionar / Editar Jogo</h3>
+                <input type="hidden" id="jogo-id">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Time da Casa (sigla) *</label>
+                        <input type="text" id="jogo-casa" placeholder="COR">
+                    </div>
+                    <div class="form-group">
+                        <label>Time Fora (sigla) *</label>
+                        <input type="text" id="jogo-fora" placeholder="REM">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Data/Hora</label>
+                        <input type="text" id="jogo-data" placeholder="23 Jul - 19h30">
+                    </div>
+                    <div class="form-group">
+                        <label>Campeonato</label>
+                        <select id="jogo-campeonato">
+                            <option value="Brasileirão">Brasileirão</option>
+                            <option value="Copa do Brasil">Copa do Brasil</option>
+                            <option value="Libertadores">Libertadores</option>
+                            <option value="Sul-Americana">Sul-Americana</option>
+                            <option value="Paulistão">Paulistão</option>
+                            <option value="Amistoso">Amistoso</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="salvarJogo()">Salvar</button>
+                    <button class="btn btn-secondary" onclick="limparFormJogo()">Limpar</button>
+                </div>
+            </div>
+
+            <div class="form-card">
+                <h3>Jogos Cadastrados</h3>
+                <div id="lista-jogos"></div>
+            </div>
+        </div>
+
+        <!-- === BOTÃO BAIXAR === -->
+        <div class="download-bar">
+            <p>📥 Depois de editar, baixe o arquivo <strong>data.json</strong> atualizado e substitua no GitHub.</p>
+            <button class="btn btn-success" onclick="baixarJSON()">Baixar data.json</button>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">Salvo com sucesso!</div>
+
+    <script>
+        let dados = { ultimasNoticias: [], ultimasDoTimao: [], videos: [], proximosJogos: [] };
+
+        // Carregar dados do localStorage ou do data.json
+        async function carregarDados() {
+            const salvos = localStorage.getItem('rotavinho-dados');
+            if (salvos) {
+                dados = JSON.parse(salvos);
+            } else {
+                try {
+                    const resp = await fetch('data.json');
+                    dados = await resp.json();
+                    localStorage.setItem('rotavinho-dados', JSON.stringify(dados));
+                } catch(e) {
+                    console.log('Primeira vez usando o painel');
+                }
+            }
+            renderizarTudo();
+        }
+
+        function salvar() {
+            localStorage.setItem('rotavinho-dados', JSON.stringify(dados));
+        }
+
+        function mostrarToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg || 'Salvo com sucesso!';
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2000);
+        }
+
+        function gerarId() { return Date.now() + Math.floor(Math.random() * 1000); }
+
+        // ========== NOTÍCIAS ==========
+        function renderizarNoticias() {
+            const el = document.getElementById('lista-noticias');
+            if (dados.ultimasNoticias.length === 0) { el.innerHTML = '<div class="empty-state">Nenhuma notícia cadastrada</div>'; return; }
+            el.innerHTML = dados.ultimasNoticias.map(n => `
+                <div class="list-item">
+                    <img src="${n.imagem || 'https://placehold.co/160x120/1a1a1a/e31837?text=Sem+foto'}" alt="">
+                    <div class="list-item-info">
+                        <div class="list-item-title">${n.destaque ? '⭐ ' : ''}${n.titulo}</div>
+                        <div class="list-item-meta">${n.tag} • ${n.data} • ❤️ ${n.curtidas} • 💬 ${n.comentarios}</div>
+                    </div>
+                    <div class="list-item-actions">
+                        <button class="btn btn-secondary" onclick="editarNoticia(${n.id})">Editar</button>
+                        <button class="btn btn-danger" onclick="excluirNoticia(${n.id})">Excluir</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function salvarNoticia() {
+            const id = document.getElementById('noticia-id').value;
+            const noticia = {
+                id: id ? parseInt(id) : gerarId(),
+                titulo: document.getElementById('noticia-titulo').value,
+                resumo: document.getElementById('noticia-resumo').value,
+                imagem: document.getElementById('noticia-imagem').value || 'https://placehold.co/400x200/1a1a1a/e31837?text=Noticia',
+                tag: document.getElementById('noticia-tag').value,
+                data: document.getElementById('noticia-data').value || 'Agora',
+                curtidas: 0,
+                comentarios: 0,
+                destaque: document.getElementById('noticia-destaque').value === 'true'
+            };
+            if (!noticia.titulo) { alert('Preencha o título!'); return; }
+            if (id) {
+                const idx = dados.ultimasNoticias.findIndex(n => n.id === parseInt(id));
+                noticia.curtidas = dados.ultimasNoticias[idx].curtidas;
+                noticia.comentarios = dados.ultimasNoticias[idx].comentarios;
+                dados.ultimasNoticias[idx] = noticia;
+            } else {
+                dados.ultimasNoticias.unshift(noticia);
+            }
+            salvar(); renderizarNoticias(); limparFormNoticia();
+            mostrarToast(id ? 'Notícia atualizada!' : 'Notícia adicionada!');
+        }
+
+        function editarNoticia(id) {
+            const n = dados.ultimasNoticias.find(x => x.id === id);
+            document.getElementById('noticia-id').value = n.id;
+            document.getElementById('noticia-titulo').value = n.titulo;
+            document.getElementById('noticia-resumo').value = n.resumo || '';
+            document.getElementById('noticia-imagem').value = n.imagem;
+            document.getElementById('noticia-tag').value = n.tag;
+            document.getElementById('noticia-data').value = n.data;
+            document.getElementById('noticia-destaque').value = n.destaque ? 'true' : 'false';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function excluirNoticia(id) {
+            if (!confirm('Excluir esta notícia?')) return;
+            dados.ultimasNoticias = dados.ultimasNoticias.filter(n => n.id !== id);
+            salvar(); renderizarNoticias();
+            mostrarToast('Notícia excluída!');
+        }
+
+        function limparFormNoticia() {
+            document.getElementById('noticia-id').value = '';
+            document.getElementById('noticia-titulo').value = '';
+            document.getElementById('noticia-resumo').value = '';
+            document.getElementById('noticia-imagem').value = '';
+            document.getElementById('noticia-tag').value = 'Mercado';
+            document.getElementById('noticia-data').value = '';
+            document.getElementById('noticia-destaque').value = 'false';
+        }
+
+        // ========== ÚLTIMAS DO TIMÃO ==========
+        function renderizarTimao() {
+            const el = document.getElementById('lista-timao');
+            if (dados.ultimasDoTimao.length === 0) { el.innerHTML = '<div class="empty-state">Nenhuma notícia cadastrada</div>'; return; }
+            el.innerHTML = dados.ultimasDoTimao.map(n => `
+                <div class="list-item">
+                    <img src="${n.imagem || 'https://placehold.co/160x120/1a1a1a/e31837?text=Sem+foto'}" alt="">
+                    <div class="list-item-info">
+                        <div class="list-item-title">${n.titulo}</div>
+                        <div class="list-item-meta">${n.data} • 💬 ${n.comentarios}</div>
+                    </div>
+                    <div class="list-item-actions">
+                        <button class="btn btn-secondary" onclick="editarTimao(${n.id})">Editar</button>
+                        <button class="btn btn-danger" onclick="excluirTimao(${n.id})">Excluir</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function salvarTimao() {
+            const id = document.getElementById('timao-id').value;
+            const item = {
+                id: id ? parseInt(id) : gerarId(),
+                titulo: document.getElementById('timao-titulo').value,
+                imagem: document.getElementById('timao-imagem').value || 'https://placehold.co/200x150/1a1a1a/e31837?text=Noticia',
+                data: document.getElementById('timao-data').value || 'Agora',
+                comentarios: 0
+            };
+            if (!item.titulo) { alert('Preencha o título!'); return; }
+            if (id) {
+                const idx = dados.ultimasDoTimao.findIndex(x => x.id === parseInt(id));
+                item.comentarios = dados.ultimasDoTimao[idx].comentarios;
+                dados.ultimasDoTimao[idx] = item;
+            } else {
+                dados.ultimasDoTimao.unshift(item);
+            }
+            salvar(); renderizarTimao(); limparFormTimao();
+            mostrarToast(id ? 'Atualizado!' : 'Adicionado!');
+        }
+
+        function editarTimao(id) {
+            const n = dados.ultimasDoTimao.find(x => x.id === id);
+            document.getElementById('timao-id').value = n.id;
+            document.getElementById('timao-titulo').value = n.titulo;
+            document.getElementById('timao-imagem').value = n.imagem;
+            document.getElementById('timao-data').value = n.data;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function excluirTimao(id) {
+            if (!confirm('Excluir?')) return;
+            dados.ultimasDoTimao = dados.ultimasDoTimao.filter(x => x.id !== id);
+            salvar(); renderizarTimao();
+            mostrarToast('Excluído!');
+        }
+
+        function limparFormTimao() {
+            document.getElementById('timao-id').value = '';
+            document.getElementById('timao-titulo').value = '';
+            document.getElementById('timao-imagem').value = '';
+            document.getElementById('timao-data').value = '';
+        }
+
+        // ========== VÍDEOS ==========
+        function renderizarVideos() {
+            const el = document.getElementById('lista-videos');
+            if (dados.videos.length === 0) { el.innerHTML = '<div class="empty-state">Nenhum vídeo cadastrado</div>'; return; }
+            el.innerHTML = dados.videos.map(v => `
+                <div class="list-item">
+                    <img src="${v.imagem || 'https://img.youtube.com/vi/' + v.youtubeId + '/mqdefault.jpg'}" alt="">
+                    <div class="list-item-info">
+                        <div class="list-item-title">${v.titulo}</div>
+                        <div class="list-item-meta">YT: ${v.youtubeId} • 👁️ ${v.views} • ${v.tempo}</div>
+                    </div>
+                    <div class="list-item-actions">
+                        <button class="btn btn-secondary" onclick="editarVideo(${v.id})">Editar</button>
+                        <button class="btn btn-danger" onclick="excluirVideo(${v.id})">Excluir</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function salvarVideo() {
+            const id = document.getElementById('video-id').value;
+            const video = {
+                id: id ? parseInt(id) : gerarId(),
+                titulo: document.getElementById('video-titulo').value,
+                youtubeId: document.getElementById('video-youtube').value,
+                imagem: document.getElementById('video-imagem').value,
+                views: document.getElementById('video-views').value || '0',
+                tempo: document.getElementById('video-tempo').value || 'agora'
+            };
+            if (!video.titulo || !video.youtubeId) { alert('Preencha título e ID do YouTube!'); return; }
+            if (!video.imagem) video.imagem = 'https://img.youtube.com/vi/' + video.youtubeId + '/mqdefault.jpg';
+            if (id) {
+                const idx = dados.videos.findIndex(v => v.id === parseInt(id));
+                dados.videos[idx] = video;
+            } else {
+                dados.videos.unshift(video);
+            }
+            salvar(); renderizarVideos(); limparFormVideo();
+            mostrarToast(id ? 'Vídeo atualizado!' : 'Vídeo adicionado!');
+        }
+
+        function editarVideo(id) {
+            const v = dados.videos.find(x => x.id === id);
+            document.getElementById('video-id').value = v.id;
+            document.getElementById('video-titulo').value = v.titulo;
+            document.getElementById('video-youtube').value = v.youtubeId;
+            document.getElementById('video-imagem').value = v.imagem;
+            document.getElementById('video-views').value = v.views;
+            document.getElementById('video-tempo').value = v.tempo;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function excluirVideo(id) {
+            if (!confirm('Excluir este vídeo?')) return;
+            dados.videos = dados.videos.filter(v => v.id !== id);
+            salvar(); renderizarVideos();
+            mostrarToast('Vídeo excluído!');
+        }
+
+        function limparFormVideo() {
+            document.getElementById('video-id').value = '';
+            document.getElementById('video-titulo').value = '';
+            document.getElementById('video-youtube').value = '';
+            document.getElementById('video-imagem').value = '';
+            document.getElementById('video-views').value = '';
+            document.getElementById('video-tempo').value = '';
+        }
+
+        // ========== JOGOS ==========
+        function renderizarJogos() {
+            const el = document.getElementById('lista-jogos');
+            if (dados.proximosJogos.length === 0) { el.innerHTML = '<div class="empty-state">Nenhum jogo cadastrado</div>'; return; }
+            el.innerHTML = dados.proximosJogos.map(j => `
+                <div class="list-item">
+                    <div class="list-item-info">
+                        <div class="list-item-title">${j.casa} vs ${j.fora}</div>
+                        <div class="list-item-meta">${j.data} • ${j.campeonato}</div>
+                    </div>
+                    <div class="list-item-actions">
+                        <button class="btn btn-secondary" onclick="editarJogo(${j.id})">Editar</button>
+                        <button class="btn btn-danger" onclick="excluirJogo(${j.id})">Excluir</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function salvarJogo() {
+            const id = document.getElementById('jogo-id').value;
+            const jogo = {
+                id: id ? parseInt(id) : gerarId(),
+                casa: document.getElementById('jogo-casa').value.toUpperCase(),
+                fora: document.getElementById('jogo-fora').value.toUpperCase(),
+                data: document.getElementById('jogo-data').value,
+                campeonato: document.getElementById('jogo-campeonato').value
+            };
+            if (!jogo.casa || !jogo.fora) { alert('Preencha os times!'); return; }
+            if (id) {
+                const idx = dados.proximosJogos.findIndex(j => j.id === parseInt(id));
+                dados.proximosJogos[idx] = jogo;
+            } else {
+                dados.proximosJogos.push(jogo);
+            }
+            salvar(); renderizarJogos(); limparFormJogo();
+            mostrarToast(id ? 'Jogo atualizado!' : 'Jogo adicionado!');
+        }
+
+        function editarJogo(id) {
+            const j = dados.proximosJogos.find(x => x.id === id);
+            document.getElementById('jogo-id').value = j.id;
+            document.getElementById('jogo-casa').value = j.casa;
+            document.getElementById('jogo-fora').value = j.fora;
+            document.getElementById('jogo-data').value = j.data;
+            document.getElementById('jogo-campeonato').value = j.campeonato;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function excluirJogo(id) {
+            if (!confirm('Excluir este jogo?')) return;
+            dados.proximosJogos = dados.proximosJogos.filter(j => j.id !== id);
+            salvar(); renderizarJogos();
+            mostrarToast('Jogo excluído!');
+        }
+
+        function limparFormJogo() {
+            document.getElementById('jogo-id').value = '';
+            document.getElementById('jogo-casa').value = '';
+            document.getElementById('jogo-fora').value = '';
+            document.getElementById('jogo-data').value = '';
+            document.getElementById('jogo-campeonato').value = 'Brasileirão';
+        }
+
+        // ========== BAIXAR JSON ==========
+        function baixarJSON() {
+            const blob = new Blob([JSON.stringify(dados, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'data.json';
+            a.click();
+            URL.revokeObjectURL(url);
+            mostrarToast('data.json baixado! Substitua no GitHub.');
+        }
+
+        // ========== TABS ==========
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
+            });
+        });
+
+        // ========== INIT ==========
+        function renderizarTudo() {
+            renderizarNoticias();
+            renderizarTimao();
+            renderizarVideos();
+            renderizarJogos();
+        }
+
+        carregarDados();
+    </script>
+</body>
+</html>

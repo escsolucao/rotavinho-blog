@@ -1,0 +1,153 @@
+{
+  "ultimasNoticias": [
+    {
+      "id": 1,
+      "titulo": "Corinthians busca reforços para o segundo semestre do Brasileirão",
+      "resumo": "Clube alvinegro acompanha situação de jogador que pode chegar como empréstimo com opção de compra.",
+      "imagem": "https://placehold.co/800x400/1a1a1a/e31837?text=Corinthians+Reforcos",
+      "tag": "Mercado",
+      "data": "Hoje, 14h30",
+      "curtidas": 234,
+      "comentarios": 45,
+      "destaque": true
+    },
+    {
+      "id": 2,
+      "titulo": "Memphis Depay mostra entrosamento e brilha nos treinamentos",
+      "resumo": "Neerlandês demonstra boa forma e se prepara para decisões do segundo semestre.",
+      "imagem": "https://placehold.co/400x200/1a1a1a/e31837?text=Memphis",
+      "tag": "Destaque",
+      "data": "Hoje, 12h00",
+      "curtidas": 567,
+      "comentarios": 89,
+      "destaque": false
+    },
+    {
+      "id": 3,
+      "titulo": "Corinthians encara desafio no Brasileirão com escalação mista",
+      "resumo": "Técnico avalia alternativas para jogos fora de casa e busca equilíbrio no time.",
+      "imagem": "https://placehold.co/400x200/1a1a1a/e31837?text=Brasileirao",
+      "tag": "Brasileirão",
+      "data": "Hoje, 10h15",
+      "curtidas": 189,
+      "comentarios": 32,
+      "destaque": false
+    },
+    {
+      "id": 4,
+      "titulo": "Fiel prepara recepção especial para jogadores do Timão",
+      "resumo": "Torcida organiza festa na chegada dos jogadores ao aeroporto após viagem.",
+      "imagem": "https://placehold.co/400x200/1a1a1a/e31837?text=Torcida",
+      "tag": "Torcida",
+      "data": "Ontem, 22h00",
+      "curtidas": 892,
+      "comentarios": 156,
+      "destaque": false
+    },
+    {
+      "id": 5,
+      "titulo": "Sub-20 do Corinthians goleia rival e assume liderança do campeonato",
+      "resumo": "Time de base apresenta futebol ofensivo e surpreende torcida.",
+      "imagem": "https://placehold.co/400x200/1a1a1a/e31837?text=Sub20",
+      "tag": "Base",
+      "data": "Ontem, 18h30",
+      "curtidas": 445,
+      "comentarios": 67,
+      "destaque": false
+    },
+    {
+      "id": 6,
+      "titulo": "Corinthians Futsal vence clássico e escapa da zona de rebaixamento",
+      "resumo": "Time de futsal conquista vitória importante na Liga Nacional de Futsal.",
+      "imagem": "https://placehold.co/400x200/1a1a1a/e31837?text=LNF",
+      "tag": "LNF",
+      "data": "Ontem, 16h00",
+      "curtidas": 123,
+      "comentarios": 18,
+      "destaque": false
+    }
+  ],
+  "ultimasDoTimao": [
+    {
+      "id": 101,
+      "titulo": "Corinthians analisa condições para contratação de atacante revelado na base",
+      "imagem": "https://placehold.co/200x150/1a1a1a/e31837?text=N1",
+      "data": "Hoje, 15h30",
+      "comentarios": 312
+    },
+    {
+      "id": 102,
+      "titulo": "Elenco foca em organização defensiva nos treinos da semana",
+      "imagem": "https://placehold.co/200x150/1a1a1a/e31837?text=N2",
+      "data": "Hoje, 14h00",
+      "comentarios": 45
+    },
+    {
+      "id": 103,
+      "titulo": "Neo Química Arena passa por reformas no setor Sul",
+      "imagem": "https://placehold.co/200x150/1a1a1a/e31837?text=N3",
+      "data": "Hoje, 12h00",
+      "comentarios": 70
+    },
+    {
+      "id": 104,
+      "titulo": "Técnico minimiza tabu e aponta dificuldades vividas pelo elenco",
+      "imagem": "https://placehold.co/200x150/1a1a1a/e31837?text=N4",
+      "data": "Hoje, 10h30",
+      "comentarios": 28
+    },
+    {
+      "id": 105,
+      "titulo": "Jogador da base celebra atuação decisiva em vitória sobre rival",
+      "imagem": "https://placehold.co/200x150/1a1a1a/e31837?text=N5",
+      "data": "Hoje, 09h00",
+      "comentarios": 15
+    }
+  ],
+  "videos": [
+    {
+      "id": 201,
+      "titulo": "Análise: Corinthians x Rivais - Quem leva vantagem?",
+      "imagem": "https://placehold.co/400x225/1a1a1a/e31837?text=Video+1",
+      "views": "12.5 mil",
+      "tempo": "há 2 dias",
+      "youtubeId": "dQw4w9WgXcQ"
+    },
+    {
+      "id": 202,
+      "titulo": "Top 5 gols do Corinthians na temporada",
+      "imagem": "https://placehold.co/400x225/1a1a1a/e31837?text=Video+2",
+      "views": "8.3 mil",
+      "tempo": "há 3 dias",
+      "youtubeId": "dQw4w9WgXcQ"
+    },
+    {
+      "id": 203,
+      "titulo": "Mercado da bola: possíveis reforços do Timão",
+      "imagem": "https://placehold.co/400x225/1a1a1a/e31837?text=Video+3",
+      "views": "15.1 mil",
+      "tempo": "há 5 dias",
+      "youtubeId": "dQw4w9WgXcQ"
+    }
+  ],
+  "proximosJogos": [
+    {
+      "casa": "COR",
+      "fora": "REM",
+      "data": "23 Jul - 19h30",
+      "campeonato": "Brasileirão"
+    },
+    {
+      "casa": "BAH",
+      "fora": "COR",
+      "data": "26 Jul - 16h00",
+      "campeonato": "Brasileirão"
+    },
+    {
+      "casa": "COR",
+      "fora": "SAN",
+      "data": "30 Jul - 21h30",
+      "campeonato": "Copa do Brasil"
+    }
+  ]
+}
