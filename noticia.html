@@ -43,7 +43,8 @@
     <script>
         function formatarTexto(texto) {
             if (!texto) return '<p>Notícia em atualização...</p>';
-            const paragrafos = texto.split(/\n\n+/);
+            texto = texto.replace(/\\n/g, '\n');
+            const paragrafos = texto.split(/\n\s*\n/);
             return paragrafos.map(p => {
                 p = p.trim();
                 if (!p) return '';
